@@ -1,5 +1,5 @@
 statsd==3.2.2
 configparser==3.5.0
-Flask==0.12.1
-requests==2.13.0
+Flask==1.0.0
+requests==2.20.0
 dogstatsd_python==0.5.6
