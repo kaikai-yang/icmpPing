@@ -23,10 +23,6 @@ a (python2) pip install -r /usr/local/icmpPing/requirements.txt
 b 刷新supervisor配置文件,将/usr/local/icmpPing/init/icmpPing.ini 更新到supervisor icmpPing.ini文件中 
 ```
 
-
-```
-
-
 *启动方式*
 
 
