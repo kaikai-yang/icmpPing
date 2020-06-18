@@ -1,0 +1,85 @@
+#!/bin/bash
+# update: 20180510
+# chkconfig:   - 85 15
+
+PROC_NAME="client"
+PROC_DIR=/usr/local/icmpPing
+PROC_BIN=$PROC_DIR/src/main/${PROC_NAME}.py
+PROC_CONF=$PROC_DIR/conf/client.ini
+lockfile=/var/lock/subsys/${PROC_NAME}
+
+start() {
+        start_info=$"Starting ${PROC_NAME} service:"
+        if [ -f $lockfile ];then
+             echo -n "${PROC_NAME} is running..."
+             echo
+        else
+            $PROC_BIN -c $PROC_CONF > /dev/null 2>&1 &
+            sleep 1
+            echo -n "$start_info"
+            ps axu | grep "$PROC_BIN" | grep -v 'grep' &> /dev/null
+            RETVAL=$?
+            if [ "$RETVAL" = 0 ];then
+                touch $lockfile
+                echo
+            else
+                echo
+                echo "Failed $start_info"
+            fi
+        fi
+}
+
+
+stop() {
+    echo -n $"Stopping ${PROC_NAME} service:"
+    ps aux | grep -E "$PROC_BIN" | grep -v grep | awk '{print $2}' | xargs kill -9 &> /dev/null
+    ret=$?
+    if [ $ret -eq 0 ]; then
+        echo
+        rm -f "$lockfile"
+    else
+        echo
+        rm -f "$lockfile"
+    fi
+
+}
+
+status(){
+    ps axu | grep "$PROC_BIN" | grep -v 'grep' &> /dev/null
+    if [ $? == '0' ];then
+        echo -n "$PROC_NAME is running..."
+        touch "$lockfile"
+        echo
+    else
+        echo -n "$PROC_NAME is not running."
+        echo
+    fi
+}
+
+
+
+restart(){
+    stop
+    start
+}
+
+# See how we were called.
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+
+  restart)
+        restart
+        ;;
+
+  status)
+        status
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|status}"
+        exit 2
+esac
